@@ -8,19 +8,32 @@ i18nReady: false
 ---
 
 [ApostropheCMS](https://apostrophecms.com) is an open-source JavaScript and NodeJS CMS that
-supports editing right on the page while rendering content with Astro.
+supports editing directly on the page within an Astro application.
 
-Apostrophe provides on-page editing, while Astro provides the most modern development experience.
-Linking the two together provides both, with just one set of templates written in Astro.
+## Integrating with Astro
 
-## Getting started
+In this guide, you will use the [ApostropheCMS integration](https://apostrophecms.com/extensions/astro-integration)
+to connect ApostropheCMS to Astro.
 
-### The `astro-frontend` project
+## Prerequisites
 
-Check out our [astro-frontend](https://github.com/apostrophecms/astro-frontend) project for an
+The following items are required to get started:
+
+* **An Astro project.** Fork our [astro-frontend](https://github.com/apostrophecms/astro-frontend) project
+as a starting point.
+
+* **An ApostropheCMS project.** Fork our [starter-kit-astro](https://github.com/apostrophecms/starter-kit-astro) project
+as a starting point.
+
+* **Node.JS and npm,** as required by both Astro and ApostropheCMS.
+
+* **A MongoDB database,** as required by ApostropheCMS. Use a [MongoDB Atlas free tier database](https://www.mongodb.com/cloud/atlas/register?utm_source=google&utm_campaign=search_gs_pl_evergreen_atlas_core-high-int_prosp-brand_gic-null_amers-us_ps-all_desktop_eng_lead&utm_term=mongo%20atlas%20free%20tier&utm_medium=cpc_paid_search&utm_ad=e&utm_ad_campaign_id=19609124046&adgroup=145188748043&cq_cmp=19609124046&gad_source=1&gclid=CjwKCAiAs6-sBhBmEiwA1Nl8s1mNY6W2UqlY7GkWVr8GEc0ThfZlJvfGOkLpcFuC-TWXP3QowWM-DhoCF9YQAvD_BwE).
+
+## Setting up the `astro-frontend` project
+
+[astro-frontend](https://github.com/apostrophecms/astro-frontend) is an 
 example of an Astro project that is already set up to use ApostropheCMS as its content source.
-You'll need to set the `APOS_EXTERNAL_FRONT_KEY` environment variable to a secret of your own,
-and set that same variable when running `starter-kit-astro`.
+
 
 ```bash
 git clone https://github.com/apostrophecms/astro-frontend
@@ -30,43 +43,48 @@ export APOS_EXTERNAL_FRONT_KEY=my-secret-here
 npm run dev
 ```
 
-But don't visit that home page quite yet; we need to start up Apostrophe too.
+Leave Astro running in this terminal.
 
 ### The `starter-kit-astro` project
 
-Next, check out our [starter-kit-astro](https://github.com/apostrophecms/starter-kit-astro) project to see
-how ApostropheCMS can be configured to provide content to Astro. Make sure you set
-`APOS_EXTERNAL_FRONT_KEY` to the same value in both projects so they can communicate.
+[starter-kit-astro](https://github.com/apostrophecms/starter-kit-astro) is an example of how
+ApostropheCMS can be configured to provide content to Astro.
 
-> Since it is oriented toward user-friendly editing, Apostrophe is backed by a database, not git.
-> So you will need [MongoDB on your computer](https://www.mongodb.com/docs/manual/installation/),
-> or a [MongoDB Atlas database](https://www.mongodb.com/cloud/atlas/register?utm_source=google&utm_campaign=search_gs_pl_evergreen_atlas_core-high-int_prosp-brand_gic-null_amers-us_ps-all_desktop_eng_lead&utm_term=mongo%20atlas%20free%20tier&utm_medium=cpc_paid_search&utm_ad=e&utm_ad_campaign_id=19609124046&adgroup=145188748043&cq_cmp=19609124046&gad_source=1&gclid=CjwKCAiAs6-sBhBmEiwA1Nl8s1mNY6W2UqlY7GkWVr8GEc0ThfZlJvfGOkLpcFuC-TWXP3QowWM-DhoCF9YQAvD_BwE) (yes, the free tier works). If you're using
-> Atlas, be sure to set the APOS_MONGODB_URI environment variable to the connection string
-> provided by Atlas, with the database password included.
-
-In a separate terminal, let's start up Apostrophe:
+In a separate terminal, clone your Apostrophe project and configure
+environment variables:
 
 ```bash
 git clone https://github.com/apostrophecms/starter-kit-astro
 cd starter-kit-astro
 npm install
 export APOS_EXTERNAL_FRONT_KEY=my-secret-here
+export APOS_MONGODB_URI=mongodb+srv://username:password@get-this-from-atlas
+```
+
+Next, create an admin user for Apostrophe:
+
+```bash
 # Do this just once, to add an admin user so you can log in
 node app @apostrophecms/user:add admin admin
+```
+
+Now, start Apostrophe and leave it running in the terminal:
+
+```bash
 npm run dev
 ```
 
 ### Logging in to edit the site
 
-One more step: logging in! Since Astro provides the front end, we can go straight to Astro at:
+Now we are ready to log in. Log in directly to your Astro project, not your ApostropheCMS project, at:
 
 ```
 http://localhost:4321/login
 ```
 
-Log in with the credentials you set when you added the admin user, above.
+Log in with the credentials you set when you added the admin user above.
 
-### Make your first content edits
+### How to edit the content
 
 Click "Edit" to start editing the page. Notice that you can add content directly on
 the page and change your previous content. You can also edit content via the admin
