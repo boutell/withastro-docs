@@ -7,92 +7,249 @@ service: Apostrophe
 i18nReady: false
 ---
 
-[ApostropheCMS](https://apostrophecms.com) is an open-source JavaScript and NodeJS CMS that
-supports editing directly on the page within an Astro application.
+[ApostropheCMS](https://apostrophecms.com) is an open-source JavaScript CMS that
+permits editing directly on the page.
 
 ## Integrating with Astro
 
 In this guide, you will use the [ApostropheCMS integration](https://apostrophecms.com/extensions/astro-integration)
-to connect ApostropheCMS to Astro.
+to connect ApostropheCMS to Astro, enabling on-page editing within Astro.
 
 ## Prerequisites
 
 The following items are required to get started:
 
 * **An Astro project.** Fork our [astro-frontend](https://github.com/apostrophecms/astro-frontend) project
-as a starting point.
+as a starting point. If you wish to integrate an existing Astro project, see our [full integration documentation](https://apostrophecms.com/extensions/astro-integration).
 
 * **An ApostropheCMS project.** Fork our [starter-kit-astro](https://github.com/apostrophecms/starter-kit-astro) project
 as a starting point.
 
 * **Node.JS and npm,** as required by both Astro and ApostropheCMS.
 
-* **A MongoDB database,** as required by ApostropheCMS. Use a [MongoDB Atlas free tier database](https://www.mongodb.com/cloud/atlas/register?utm_source=google&utm_campaign=search_gs_pl_evergreen_atlas_core-high-int_prosp-brand_gic-null_amers-us_ps-all_desktop_eng_lead&utm_term=mongo%20atlas%20free%20tier&utm_medium=cpc_paid_search&utm_ad=e&utm_ad_campaign_id=19609124046&adgroup=145188748043&cq_cmp=19609124046&gad_source=1&gclid=CjwKCAiAs6-sBhBmEiwA1Nl8s1mNY6W2UqlY7GkWVr8GEc0ThfZlJvfGOkLpcFuC-TWXP3QowWM-DhoCF9YQAvD_BwE).
+* **A MongoDB database,** as required by ApostropheCMS. Use a [MongoDB Atlas free tier database](https://www.mongodb.com/cloud/atlas/register?utm_source=google&utm_campaign=search_gs_pl_evergreen_atlas_core-high-int_prosp-brand_gic-null_amers-us_ps-all_desktop_eng_lead&utm_term=mongo%20atlas%20free%20tier&utm_medium=cpc_paid_search&utm_ad=e&utm_ad_campaign_id=19609124046&adgroup=145188748043&cq_cmp=19609124046&gad_source=1&gclid=CjwKCAiAs6-sBhBmEiwA1Nl8s1mNY6W2UqlY7GkWVr8GEc0ThfZlJvfGOkLpcFuC-TWXP3QowWM-DhoCF9YQAvD_BwE) to
+get started quickly. Make sure your database is configured to accept connections from your IP address.
 
-## Setting up the `astro-frontend` project
+## Installation
 
-[astro-frontend](https://github.com/apostrophecms/astro-frontend) is an 
-example of an Astro project that is already set up to use ApostropheCMS as its content source.
+### Choosing a secret
 
+Choose a secret to be shared by Astro and ApostropheCMS. Generate a random password
+for this purpose and make a note of it.
+
+### Installing and launching Astro
+
+Clone the project, set the shared secret as an environment variable, and launch the project
+as shown below.
 
 ```bash
 git clone https://github.com/apostrophecms/astro-frontend
 cd astro-frontend
 npm install
-export APOS_EXTERNAL_FRONT_KEY=my-secret-here
+export APOS_EXTERNAL_FRONT_KEY=your-secret-here
 npm run dev
 ```
 
 Leave Astro running in this terminal.
 
-### The `starter-kit-astro` project
+### setting up Apostrophe via the `starter-kit-astro` project
 
-[starter-kit-astro](https://github.com/apostrophecms/starter-kit-astro) is an example of how
-ApostropheCMS can be configured to provide content to Astro.
-
-In a separate terminal, clone your Apostrophe project and configure
-environment variables:
+In a separate terminal, clone the [starter-kit-astro](https://github.com/apostrophecms/starter-kit-astro) project
+and configure your environment with both the shared secret and your MongoDB Atlas
+connection URI:
 
 ```bash
 git clone https://github.com/apostrophecms/starter-kit-astro
 cd starter-kit-astro
 npm install
-export APOS_EXTERNAL_FRONT_KEY=my-secret-here
-export APOS_MONGODB_URI=mongodb+srv://username:password@get-this-from-atlas
+export APOS_EXTERNAL_FRONT_KEY=your-secret-here
+export APOS_MONGODB_URI=mongodb+srv://username:password@you-get-this-from-atlas
 ```
 
-Next, create an admin user for Apostrophe:
+### Creating an admin user for ApostropheCMS
+
+In the same terminal, run these commands **only once** to create an admin
+user for Apostrophe:
 
 ```bash
-# Do this just once, to add an admin user so you can log in
 node app @apostrophecms/user:add admin admin
 ```
 
-Now, start Apostrophe and leave it running in the terminal:
+## Editing the site
+
+In the same terminal, start Apostrophe and leave it running:
 
 ```bash
 npm run dev
 ```
 
-### Logging in to edit the site
+### Logging in
 
-Now we are ready to log in. Log in directly to your Astro project, not your ApostropheCMS project, at:
+Log in directly to your Astro project:
 
 ```
 http://localhost:4321/login
 ```
 
-Log in with the credentials you set when you added the admin user above.
+Log in with the username `admin` and the password you set when prompted above.
 
-### How to edit the content
+### Editing the site
 
-Click "Edit" to start editing the page. Notice that you can add content directly on
+Click "Edit" to start editing the page. Note that you can add content directly on
 the page and change your previous content. You can also edit content via the admin
-bar at the top.
+bar at the top. This allows you to perform actions beyond the current page, such
+as creating new pages.
 
-To make your settings visible when logged out (to "the public" once a site is deployed),
-click the "Update" button. Until then you can keep revising your draft changes, which
-save automatically.
+To make your settings visible when logged out, click the "Update" button. Until then
+you can keep revising your draft changes, which save automatically.
+
+
+## Connecting Apostrophe page types to Astro components
+
+As a user, you can create any number of pages on an Apostrophe site. While
+some pages may be rendered well by a single Astro component, others, like
+the home page, may benefit from a custom Astro component. In this section
+you will learn how to map an ApostropheCMS page type to a specific
+Astro component that renders both static and user-edited content. For more
+information about creating ApostropheCMS page types, see
+[pages and page types](https://v3.docs.apostrophecms.org/guide/pages.html) in
+the Apostrophe documentation.
+
+### Mapping a page type to a component in Astro
+
+In your Astro project, edit `src/templates/index.js` to map the new page
+type to a new Astro component:
+
+```javascript
+// src/templates/index.js
+
+// Place after the existing page type imports
+import HeroPage from './HeroPage.astro';
+
+const templateComponents = {
+  // Place after the existing items
+  'hero-page': HeroPage
+};
+
+export default templateComponents;
+```
+
+For simple page types, the Apostrophe page type module name, in this case
+`hero-page`, and the template name are the same.
+
+### Writing a page component in Astro
+
+Next, in your Astro project, create `src/templates/HeroPage.astro`:
+
+```js
+---
+import AposArea from '@apostrophecms/apostrophe-astro/components/AposArea.astro';
+const { page } = Astro.props.aposData;
+const { title, hero, main } = page;
+---
+
+<header>
+  <h1>{ title }</h>
+  <section class="hero">
+    <AposArea area={hero} />
+  </section>
+</header>
+<section>
+    <AposArea area={body} />
+</section>
+```
+
+You will receive the `page` object from Apostrophe, which gives you
+access to `page.title`, `page.hero`, `page.body` and any other editable fields.
+For more information see [pages and page types](https://v3.docs.apostrophecms.org/guide/pages.html)
+in the Apostrophe documentation.
+
+The `index` page component of a page type like `@apostrophecms/blog-page`
+also receives a `pieces` prop containing an array of blog posts, While
+the matching `show` template receives a `piece` prop containing the individual blog post.
+
+### Inserting user-created content with `AposArea`
+
+Note the use of the `AposArea` component. This component allows Astro to render
+Apostrophe areas, and provides a standard Apostrophe on-page editing experience.
+Each content area may contain both standard Apostrophe widgets such as rich text
+and custom widgets, each of which must be mapped to an Astro component as shown below.
+
+## Connecting Apostrophe widget types to Astro components
+
+You must map each ApostropheCMS [widget](https://v3.docs.apostrophecms.org/guide/core-concepts.html#widgets)
+type to a component in your Astro project. As a starting point, the `astro-frontend` project includes
+mappings and components to render the ApostropheCMS rich text, image and video widgets. However,
+[creating custom widget types](https://v3.docs.apostrophecms.org/tutorials/widgets.html)
+for custom use cases is common. This section covers how to render your custom widgets
+in your Astro project.
+
+### Mapping a widget type to a component in Astro
+
+In your Astro project, edit `src/widgets/index.js` to map the new widget
+type created in the [Apostrophe documentation](https://v3.docs.apostrophecms.org/guide/custom-widgets.html)
+to a new Astro component:
+
+```js
+// src/widgets/index.js
+
+import TwoColumnWidget from './TwoColumnWidget.astro';
+
+const widgetComponents = {
+  // After the existing mappings
+  'two-column': TwoColumnWidget
+};
+
+export default widgetComponents;
+```
+
+Note that the widget name is the same as the ApostropheCMS module name, **without**
+the `-widget` part at the end.
+
+### Writing a widget component in Astro
+
+You Astro widget will receive a `widget` property, in addition to any custom props
+you passed to the `AposArea` component. This `widget` property contains the
+the schema fields of your Apostrophe widget.  
+
+As an example, here is a simple Astro component to render `@apostrophecms/image` widgets:
+
+```js
+---
+const { widget } = Astro.props;
+const placeholder = widget?.aposPlaceholder;
+const src = placeholder ?
+  '/images/image-widget-placeholder.jpg' :
+  widget?._image[0]?.attachment?._urls['full'];
+---
+<style>
+  .img-widget {
+    width: 100%;
+  }
+</style>
+<img class="img-widget" {src} />
+```
+
+ For page types that
+extend `@apostrophecms/piece-page-type`, create two mappings and two
+components, for example:
+
+```javascript
+// src/templates/index.js
+
+// Place after the existing page type imports
+import BlogIndexPage from './BlogIndexPage.astro';
+import BlogShowPage from './BlogShowPage.astro';
+
+const templateComponents = {
+  // Place after the existing items
+  '@apostrophecms/blog-page:index': BlogIndexPage,
+  '@apostrophecms/blog-page:show': BlogShowPage
+};
+
+export default templateComponents;
+```
+
 
 ### Next steps with the Astro integration for ApostropheCMS
 
